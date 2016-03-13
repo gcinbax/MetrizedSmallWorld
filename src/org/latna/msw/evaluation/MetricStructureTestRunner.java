@@ -37,7 +37,10 @@ public class MetricStructureTestRunner {
     public void testStructure(AbstractMetricStructure metricStructure, String outputName) {
         FileWriter fw = null;
         try {
-            fw = new FileWriter(new File(outputName), true);
+            new File("mydir").mkdir();
+            File file = new File(outputName);
+            System.out.println(file.getAbsolutePath());
+            fw = new FileWriter(file, true);
 
             Map<MetricElement, TreeSet<EvaluatedElement>> rightResultMap = new HashMap<MetricElement, TreeSet<EvaluatedElement>>();
 

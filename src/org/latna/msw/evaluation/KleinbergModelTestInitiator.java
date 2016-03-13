@@ -5,8 +5,15 @@ package org.latna.msw.evaluation;
  */
 public class KleinbergModelTestInitiator {
     public static void main(String[] args) {
-
-        KleinbergVsMSWModelTest test = new KleinbergVsMSWModelTest(100, 2, 0, 1);
-        test.runTest();
+        int k = 1;
+        for (int i = 1; i <= 11; i++) {
+            k *= 2;
+            KleinbergVsMSWModelTest test = new KleinbergVsMSWModelTest(k * 10000, 2, 2, 1);
+            test.runTest();
+        }
+        for (int i = 1; i <= 5; i++) {
+            KleinbergVsMSWModelTest test = new KleinbergVsMSWModelTest(5000000, 2, 2, 1);
+            test.runTest();
+        }
     }
 }

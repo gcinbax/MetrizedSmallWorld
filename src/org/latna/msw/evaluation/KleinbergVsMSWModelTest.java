@@ -1,7 +1,9 @@
 package org.latna.msw.evaluation;
 
 import org.latna.msw.*;
+import org.latna.msw.euclidian.Euclidean;
 import org.latna.msw.euclidian.GridEuclidianFactory;
+import org.latna.msw.singleAttribute.SingleAttributeElement;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -28,12 +30,11 @@ public class KleinbergVsMSWModelTest {
     }
 
     public void runTest() {
-        Kleinberg kleinberg = buildKleinberg();
         MetrizedSmallWorld metrizedSmallWorld = buildMsw();
-
+        Kleinberg kleinberg = buildKleinberg(metrizedSmallWorld.getEdgesAmount());
         MetricStructureTestRunner testRunner = new MetricStructureTestRunner(dimension, 5, 10, 5);
-        testRunner.testStructure(kleinberg, "D:/Kleinberg.txt");
-        testRunner.testStructure(metrizedSmallWorld, "D:/MSW.txt");
+        testRunner.testStructure(kleinberg, "mydir/Kleinberg.dimen="+dimension+".size="+size+".txt");
+        testRunner.testStructure(metrizedSmallWorld, "mydir/MSW.dimen="+dimension+".size="+size+".txt");
     }
 
     private MetrizedSmallWorld buildMsw() {
@@ -41,6 +42,7 @@ public class KleinbergVsMSWModelTest {
         msw.setInitAttempts(10);
         msw.setNN(5);
         fillStructure(msw);
+        msw.addGridEdges(1);
         return msw;
     }
 
@@ -48,6 +50,16 @@ public class KleinbergVsMSWModelTest {
         Kleinberg kleinbergModel = new Kleinberg();
         kleinbergModel.setProb(probCoeff);
         fillStructure(kleinbergModel);
+        kleinbergModel.checkEdgesCorrectness();
+        kleinbergModel.replaceEdges();
+        return kleinbergModel;
+    }
+
+    private Kleinberg buildKleinberg(long edgesAmount) {
+        Kleinberg kleinbergModel = new Kleinberg(edgesAmount);
+        kleinbergModel.setProb(probCoeff);
+        fillStructure(kleinbergModel);
+        kleinbergModel.checkEdgesCorrectness();
         kleinbergModel.replaceEdges();
         return kleinbergModel;
     }
