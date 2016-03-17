@@ -1,10 +1,14 @@
 package org.latna.msw.evaluation;
 
-import org.latna.msw.*;
+import org.latna.msw.AbstractMetricStructure;
+import org.latna.msw.Kleinberg;
+import org.latna.msw.MetricElement;
+import org.latna.msw.MetrizedSmallWorld;
 import org.latna.msw.euclidian.GridEuclidianFactory;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,27 +32,44 @@ public class KleinbergVsMSWModelTest {
     }
 
     public void runTest() {
-        Kleinberg kleinberg = buildKleinberg();
+        long currentTimeMillis = System.currentTimeMillis();
+
         MetrizedSmallWorld metrizedSmallWorld = buildMsw();
+        currentTimeMillis = System.currentTimeMillis() - currentTimeMillis;
+        System.out.println("build msw time=" + currentTimeMillis);
+
+        currentTimeMillis = System.currentTimeMillis();
+        Kleinberg kleinberg = buildKleinberg(metrizedSmallWorld.getEdgesAmount());
+        currentTimeMillis = System.currentTimeMillis() - currentTimeMillis;
+        System.out.println("build kleinberg time=" + currentTimeMillis);
 
         MetricStructureTestRunner testRunner = new MetricStructureTestRunner(dimension, 5, 10, 5);
-        testRunner.testStructure(kleinberg, "D:/Kleinberg.txt");
-        testRunner.testStructure(metrizedSmallWorld, "D:/MSW.txt");
+        testRunner.testStructure(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + ".size=" + size + ".txt");
+        testRunner.testStructure(metrizedSmallWorld, "KleinbergVsMSW_out/MSW.dimen=" + dimension + ".size=" + size + ".txt");
     }
 
     private MetrizedSmallWorld buildMsw() {
         MetrizedSmallWorld msw = new MetrizedSmallWorld();
         msw.setInitAttempts(10);
         msw.setNN(5);
+
         fillStructure(msw);
+
+        msw.addGridEdges(1);
         return msw;
     }
 
-    private Kleinberg buildKleinberg() {
-        Kleinberg kleinbergModel = new Kleinberg();
+    private Kleinberg buildKleinberg(long edgesAmount) {
+        Kleinberg kleinbergModel = new Kleinberg(edgesAmount);
         kleinbergModel.setProb(probCoeff);
         fillStructure(kleinbergModel);
-        kleinbergModel.replaceEdges();
+
+        kleinbergModel.checkEdgesCorrectness();
+
+        ExecutorService executorAdder = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+        kleinbergModel.generateLongRangeContacts(executorAdder);
+        shutdownAndAwaitTermination(executorAdder);
+
         return kleinbergModel;
     }
 
