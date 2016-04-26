@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
  * @author Alexander Bukata gcinbax@gmail.com
  */
 public class Kleinberg extends AbstractMetricStructure {
-    private long edgesAmount = 0;
+    private volatile long edgesAmount = 0;
     private final long edgesAmountConstraint;
     private int size = 0; //sqrt(size)*sqrt(size) grid
     private int latticeDistance = 1; // distance between elements of grid
@@ -84,35 +84,24 @@ public class Kleinberg extends AbstractMetricStructure {
         elements.add(newElement);
     }
 
-    public void generateLongRangeContacts(ExecutorService executor) {
-        //checkEdgesCorrectness();
-        //do {
-        List<MetricElement> syncElements = Collections.synchronizedList(new ArrayList<MetricElement>(elements));
-        for (final MetricElement element_1 : syncElements) {
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    List<MetricElement> shuffledElements = Collections.synchronizedList(new ArrayList<MetricElement>(elements));
-                    Collections.shuffle(shuffledElements);
-                    for (final MetricElement element_2 : shuffledElements) {
+    public void generateLongRangeContacts() {
+        elements.parallelStream().forEach(this::addLongRangeContacts);
+    }
 
-                        double curr_prob_threshold = Math.pow(element_1.calcDistance(element_2), -prob);  //Kleinberg coefficient
-                        if (!element_1.equals(element_2)
-                                && !element_1.getAllFriends().contains(element_2)
-                                && new Random().nextDouble() < curr_prob_threshold
-                                && edgesAmount < edgesAmountConstraint) {
-                            element_1.addFriend(element_2);
-                            element_2.addFriend(element_1);
-                            edgesAmount++;
-                        }
-                    }
-
-                }
-            });
+    private void addLongRangeContacts(MetricElement element) {
+        List<MetricElement> shuffledElements = new ArrayList<>(elements);
+        Collections.shuffle(shuffledElements);
+        for (final MetricElement element2 : shuffledElements) {
+            double curr_prob_threshold = Math.pow(element.calcDistance(element2), -prob);  //Kleinberg coefficient
+            if (!element.equals(element2)
+                    && !element.getAllFriends().contains(element2)
+                    && new Random().nextDouble() < curr_prob_threshold
+                    && edgesAmount < edgesAmountConstraint) {
+                element.addFriend(element2);
+                element2.addFriend(element);
+                edgesAmount++;
+            }
         }
-
-        System.out.println(edgesAmount);
-        //} while (edgesAmount < edgesAmountConstraint || edgesAmountConstraint == Long.MAX_VALUE);
     }
 
     public void checkEdgesCorrectness() {

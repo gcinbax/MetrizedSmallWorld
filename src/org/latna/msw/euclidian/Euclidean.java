@@ -8,7 +8,7 @@ import org.latna.msw.MetricElement;
  */
 public class Euclidean extends MetricElement {
     
-    private double x[];
+    public double x[];
     
     public Euclidean(double x[]) {
         this.x = x;

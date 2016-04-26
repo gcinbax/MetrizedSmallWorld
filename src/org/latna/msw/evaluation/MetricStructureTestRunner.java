@@ -8,6 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,11 +31,72 @@ public class MetricStructureTestRunner {
 
     public MetricStructureTestRunner(int dimensionality, int minAttempts, int maxAttempts, int kClosest) {
         testQueryFactory = new EuclidianFactory(dimensionality, TEST_SEQ_SIZE);
-        testQueries = new ArrayList<MetricElement>();
+        testQueries = new ArrayList<>();
         this.minAttempts = minAttempts;
         this.maxAttempts = maxAttempts;
         this.kClosest = kClosest;
 
+    }
+
+    public void testStructureParallel(AbstractMetricStructure metricStructure, String outputName) {
+        FileWriter fw = null;
+        try {
+            new File("KleinbergVsMSW_out").mkdir();
+            File file = new File(outputName);
+            System.out.println(file.getAbsolutePath());
+            fw = new FileWriter(file, true);
+
+            Map<MetricElement, TreeSet<EvaluatedElement>> rightResultMap = new HashMap<>();
+
+            System.out.println("The second stage");
+            for (MetricElement newQuery : testQueryFactory.getElements()) {
+                testQueries.add(newQuery);
+                rightResultMap.put(newQuery, TestLib.getKCorrectElements(metricStructure.getElements(), newQuery, kClosest));
+            }
+
+            System.out.println("The third stage");
+            System.out.println("Elements Array Size: " + metricStructure.getElements().size());
+
+
+            for (int a = minAttempts; a <= maxAttempts; a++) {
+                List<TestResult> searchResultList = new ArrayList<>();
+
+                int resultGood = 0;
+                long scanned = 0;
+                final int finalA = a;
+
+                ArrayList<MetricElement> testing = new ArrayList<>();
+                for (int i = 0; i < TEST_SEQ_SIZE; i++) {
+                    testing.add(testQueries.get(new Random().nextInt(testQueries.size())));
+                }
+                testing.stream().forEach(testQ -> {
+                    SearchResult result = metricStructure.knnSearch(testQ, kClosest, 1);
+                    int good = 0;
+                    for (EvaluatedElement ee : result.getViewedList()) {
+                        if (rightResultMap.get(testQ).contains(ee)) good++;
+                    }
+                    searchResultList.add(new TestResult(good, result.getViewedList().size(), result.getSteps(), result.getVisitedSet()));
+                });
+                for (TestResult result : searchResultList) {
+                    resultGood += result.getRightResutls();
+                    scanned += result.getScannedNumber();
+                }
+
+                double recall = ((double) resultGood) / ((double) TEST_SEQ_SIZE * kClosest);
+                double scannedPercent = ((double) (scanned)) / ((double) metricStructure.getElements().size() * (double) TEST_SEQ_SIZE);
+                System.out.print("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
+                fw.append("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public void testStructure(AbstractMetricStructure metricStructure, String outputName) {
@@ -57,7 +122,7 @@ public class MetricStructureTestRunner {
 
             for (int a = minAttempts; a <= maxAttempts; a++) {
                 ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-                List<Future<TestResult>> searchResultList = new ArrayList<Future<TestResult>>();
+                List<Future<TestResult>> searchResultList = new ArrayList<>();
 
                 int good = 0;
                 long scanned = 0;
