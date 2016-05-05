@@ -11,7 +11,7 @@ public class MetrizedSmallWorld extends AbstractMetricStructure {
     private int initAttempts;
     private int nn;
     private int size = 0; //number of elements
-    private long edgesAmount = 0;
+    private volatile long edgesAmount = 0;
 
     public MetrizedSmallWorld() {
         super();

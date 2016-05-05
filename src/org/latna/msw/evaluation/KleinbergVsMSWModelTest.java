@@ -53,6 +53,7 @@ public class KleinbergVsMSWModelTest {
 
     private Kleinberg buildKleinberg(long edgesAmount) {
         Kleinberg kleinbergModel = new Kleinberg(edgesAmount);
+        kleinbergModel.setSize(size);
         kleinbergModel.setProb(probCoeff);
         fillStructure(kleinbergModel);
         kleinbergModel.checkEdgesCorrectness();

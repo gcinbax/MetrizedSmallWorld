@@ -2,6 +2,7 @@ package org.latna.msw;
 
 import sun.reflect.generics.tree.ArrayTypeSignature;
 
+import java.rmi.MarshalException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -89,16 +90,17 @@ public class Kleinberg extends AbstractMetricStructure {
     }
 
     private void addLongRangeContacts(MetricElement element) {
-        List<MetricElement> shuffledElements = new ArrayList<>(elements);
-        Collections.shuffle(shuffledElements);
-        for (final MetricElement element2 : shuffledElements) {
-            double curr_prob_threshold = Math.pow(element.calcDistance(element2), -prob);  //Kleinberg coefficient
-            if (!element.equals(element2)
-                    && !element.getAllFriends().contains(element2)
+        //performance problem, solved by hack. We only read elements from "elements" and dont need amigious synchronization here
+        List<MetricElement> metricElements = Collections.unmodifiableList(new ArrayList<>(elements));
+        for (int i = 0; i < size; i++) {
+            MetricElement randomElement = metricElements.get(new Random().nextInt(size));
+            double curr_prob_threshold = Math.pow(element.calcDistance(randomElement), -prob);  //Kleinberg coefficient
+            if (!element.equals(randomElement)
+                    && !element.getAllFriends().contains(randomElement)
                     && new Random().nextDouble() < curr_prob_threshold
                     && edgesAmount < edgesAmountConstraint) {
-                element.addFriend(element2);
-                element2.addFriend(element);
+                element.addFriend(randomElement);
+                randomElement.addFriend(element);
                 edgesAmount++;
             }
         }

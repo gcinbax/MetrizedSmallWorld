@@ -4,10 +4,7 @@ import org.latna.msw.euclidian.Euclidean;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -16,7 +13,7 @@ import java.util.function.Function;
 public class MetricStructureWriter {
     public static void writeStructure(AbstractMetricStructure graph, String output) {
         FileWriter fileWriter = null;
-        Map<MetricElement, Integer> metricElementIntegerMap = buildMapNumbers(graph.elements);
+        List<MetricElement> visited = new ArrayList<>();
         try {
             fileWriter = new FileWriter(output);
             List<MetricElement> elements = graph.elements;
@@ -27,14 +24,12 @@ public class MetricStructureWriter {
                         Euclidean euclElement2 = (Euclidean) element2;
                         if (element1.getAllFriends().contains(element2)
                                 && element2.getAllFriends().contains(element1)
-                                && euclElement1.x[0] >= euclElement2.x[0]) {
-                            /*Integer firstElemNumber = metricElementIntegerMap.get(element1);
-                            Integer secondElemNumber = metricElementIntegerMap.get(element2);
-                            fileWriter.write(firstElemNumber + " " + secondElemNumber + "\n");*/
+                                && !visited.contains(element2)) {
                             fileWriter.write(euclElement1.toString() + " " + euclElement2.toString() + "\n");
                         }
                     }
                 }
+                visited.add(element1);
             }
             fileWriter.flush();
         } catch (IOException e) {

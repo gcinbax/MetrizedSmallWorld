@@ -6,10 +6,7 @@ import cern.jet.random.engine.RandomEngine;
 import org.latna.msw.MetricElement;
 import org.latna.msw.MetricElementFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class GridEuclidianFactory implements MetricElementFactory {
     private int dimension;
