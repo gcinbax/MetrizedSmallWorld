@@ -93,14 +93,14 @@ public class Kleinberg extends AbstractMetricStructure {
         //performance problem, solved by hack. We only read elements from "elements" and dont need amigious synchronization here
         List<MetricElement> metricElements = Collections.unmodifiableList(new ArrayList<>(elements));
         for (int i = 0; i < size; i++) {
-            MetricElement randomElement = metricElements.get(new Random().nextInt(size));
-            double curr_prob_threshold = Math.pow(element.calcDistance(randomElement), -prob);  //Kleinberg coefficient
-            if (!element.equals(randomElement)
-                    && !element.getAllFriends().contains(randomElement)
-                    && new Random().nextDouble() < curr_prob_threshold
-                    && edgesAmount < edgesAmountConstraint) {
-                element.addFriend(randomElement);
-                randomElement.addFriend(element);
+            MetricElement randomElement1 = metricElements.get(new Random().nextInt(size));
+            MetricElement randomElement2 = metricElements.get(new Random().nextInt(size));
+            double curr_prob_threshold = Math.pow(randomElement1.calcDistance(randomElement2), -prob);  //Kleinberg coefficient
+            if (!randomElement1.equals(randomElement2)
+                    && !randomElement1.getAllFriends().contains(randomElement2)
+                    && new Random().nextDouble() < curr_prob_threshold) {
+                randomElement1.addFriend(randomElement2);
+                randomElement2.addFriend(randomElement1);
                 edgesAmount++;
             }
         }

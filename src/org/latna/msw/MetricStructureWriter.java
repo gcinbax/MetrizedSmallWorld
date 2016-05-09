@@ -53,4 +53,26 @@ public class MetricStructureWriter {
         }
         return map;
     }
+
+    public static void writeDegreeDestribution(AbstractMetricStructure metricStructure, String output) {
+        Map<Integer, Integer> degrees = new TreeMap<Integer, Integer>();
+        for (MetricElement me : metricStructure.getElements()) {
+            int degree = me.getAllFriends().size();
+            if (degrees.containsKey(degree)) {
+                degrees.put(degree, degrees.get(degree) + 1);
+            } else
+                degrees.put(degree, 1);
+        }
+
+        FileWriter outp;
+        try {
+            outp = new FileWriter(output);
+            for (Map.Entry elem : degrees.entrySet()) {
+                outp.write(elem.getValue().toString() + " " + elem.getKey().toString() + "\n");
+            }
+            outp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

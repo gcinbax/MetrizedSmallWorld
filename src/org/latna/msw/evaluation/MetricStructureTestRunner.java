@@ -63,8 +63,7 @@ public class MetricStructureTestRunner {
 
                 int resultGood = 0;
                 long scanned = 0;
-                final int finalA = a;
-
+                int steps = 0;
                 ArrayList<MetricElement> testing = new ArrayList<>();
                 for (int i = 0; i < TEST_SEQ_SIZE; i++) {
                     testing.add(testQueries.get(new Random().nextInt(testQueries.size())));
@@ -80,12 +79,14 @@ public class MetricStructureTestRunner {
                 for (TestResult result : searchResultList) {
                     resultGood += result.getRightResutls();
                     scanned += result.getScannedNumber();
+                    steps += result.getSteps();
                 }
 
                 double recall = ((double) resultGood) / ((double) TEST_SEQ_SIZE * kClosest);
+                double avgDiameter = ((double) steps) / ((double) TEST_SEQ_SIZE);
                 double scannedPercent = ((double) (scanned)) / ((double) metricStructure.getElements().size() * (double) TEST_SEQ_SIZE);
-                System.out.print("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
-                fw.append("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
+                System.out.print("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tAvg Diameter = " + avgDiameter + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
+                fw.append("K = " + kClosest + " Attepts = " + a + "\trecall = " + recall + "\tAvg Diameter = " + avgDiameter + "\tScanedPercent = " + scannedPercent + "\tAvg Scanned\t" + ((double) scanned / (double) TEST_SEQ_SIZE) + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

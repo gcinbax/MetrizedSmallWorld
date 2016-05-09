@@ -22,7 +22,7 @@ public class SearchResult {
     }
 
     public int getSteps() {
-        return steps;
+        return visitedSet.size();
     }
 
     public void setSteps(int steps) {
