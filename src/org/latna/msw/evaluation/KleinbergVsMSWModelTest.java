@@ -61,6 +61,17 @@ public class KleinbergVsMSWModelTest {
         kleinbergModel.setProb(probCoeff);
         fillStructure(kleinbergModel);
         kleinbergModel.checkEdgesCorrectness();
+        kleinbergModel.replaceEdges();
+        return kleinbergModel;
+    }
+
+    private Kleinberg buildKleinberg(long edgesAmount) {
+        Kleinberg kleinbergModel = new Kleinberg(edgesAmount);
+        kleinbergModel.setProb(probCoeff);
+        fillStructure(kleinbergModel);
+        kleinbergModel.checkEdgesCorrectness();
+        kleinbergModel.replaceEdges();
+        kleinbergModel.checkEdgesCorrectness();
         kleinbergModel.generateLongRangeContacts();
 
         return kleinbergModel;

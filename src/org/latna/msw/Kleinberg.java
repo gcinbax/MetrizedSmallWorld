@@ -2,9 +2,10 @@ package org.latna.msw;
 
 import sun.reflect.generics.tree.ArrayTypeSignature;
 
-import java.rmi.MarshalException;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Random;
 
 /**
  * One of the simplest implementation of the Metrized Small World Data Structure.

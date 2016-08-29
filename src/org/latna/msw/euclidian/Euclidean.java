@@ -13,6 +13,11 @@ public class Euclidean extends MetricElement {
         this.x = x;
     }
 
+    public double[] getX() {
+        return x;
+    }
+
+
     @Override
     public double calcDistance(MetricElement gme) {
         double d = 0;
