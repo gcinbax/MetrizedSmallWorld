@@ -206,7 +206,6 @@ public class TestLib {
                 toReturn = toReturn + combination(me.getAllFriends().size(), 2);
             }
         }
-        System.out.println(toReturn);
         return toReturn;
     }
 

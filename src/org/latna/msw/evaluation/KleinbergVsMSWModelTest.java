@@ -3,12 +3,6 @@ package org.latna.msw.evaluation;
 import org.latna.msw.*;
 import org.latna.msw.euclidian.GridEuclidianFactory;
 
-import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
-
 /**
  * Created with IntelliJ IDEA.
  * User: i-mad_000
@@ -32,15 +26,22 @@ public class KleinbergVsMSWModelTest {
 
     public void runTest() {
         MetrizedSmallWorld metrizedSmallWorld = buildMsw();
-        Kleinberg kleinberg = buildKleinberg(metrizedSmallWorld.getEdgesAmount());
+        Kleinberg kleinberg = buildKleinberg(0);
 
         MetricStructureTestRunner testRunner = new MetricStructureTestRunner(dimension, 5, 10, 5);
         //MetricStructureWriter.writeStructure(kleinberg, "KleinbergGraph.dimen=" + dimension + ".size=" + size + ".txt");
         //MetricStructureWriter.writeStructure(metrizedSmallWorld, "MSWGraph.dimen=" + dimension + ".size=" + size + ".txt");
-        testRunner.testStructureParallel(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + ".size=" + size + ".txt");
+        //testRunner.testStructureParallel(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + ".size=" + size + ".txt");
         testRunner.testStructureParallel(metrizedSmallWorld, "KleinbergVsMSW_out/MSW.dimen=" + dimension + ".size=" + size + ".txt");
-        MetricStructureWriter.writeDegreeDestribution(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + ".size=" + size + "_degree_distrib.txt");
-        MetricStructureWriter.writeDegreeDestribution(metrizedSmallWorld, "KleinbergVsMSW_out/MSW.dimen=" + dimension + ".size=" + size + "_degree_distrib.txt");
+        //MetricStructureWriter.writeDegreeDestribution(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + ".size=" + size + "_degree_distrib.txt");
+        //MetricStructureWriter.writeDegreeDestribution(metrizedSmallWorld, "KleinbergVsMSW_out/MSW.dimen=" + dimension + ".size=" + size + "_degree_distrib.txt");
+        //long start = System.nanoTime();
+        //MetricStructureWriter.writeGlobalClusteringDestribution(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + "_clustering_distrib.txt");
+        //System.out.println("Global: " + (System.nanoTime() - start));
+        //start = System.nanoTime();
+        //MetricStructureWriter.writeLocalClusteringDestribution(kleinberg, "KleinbergVsMSW_out/Kleinberg.dimen=" + dimension + "_local_clustering_distrib.txt");
+        //System.out.println("Local: " + (System.nanoTime() - start));
+        //MetricStructureWriter.writeGlobalClusteringDestribution(metrizedSmallWorld, "KleinbergVsMSW_out/MSW.dimen=" + dimension + "_clustering_distrib.txt");
     }
 
     private MetrizedSmallWorld buildMsw() {
@@ -50,7 +51,7 @@ public class KleinbergVsMSWModelTest {
 
         fillStructure(msw);
 
-        //msw.addGridEdges(1);
+        msw.addGridEdges(1);
         return msw;
     }
 

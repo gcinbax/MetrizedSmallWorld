@@ -15,6 +15,7 @@ public class GridEuclidianFactory implements MetricElementFactory {
     private static Random random = new Random();
 
     public List<MetricElement> getElements() {
+        Collections.shuffle(allElements);
         return allElements;
     }
 

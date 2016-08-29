@@ -75,4 +75,38 @@ public class MetricStructureWriter {
             e.printStackTrace();
         }
     }
+
+    public static void writeDiameterDestribution(AbstractMetricStructure metricStructure, String output) {
+        FileWriter outp;
+        try {
+            outp = new FileWriter(output);
+            outp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeGlobalClusteringDestribution(AbstractMetricStructure metricStructure, String output) {
+        FileWriter outp;
+        try {
+            outp = new FileWriter(output, true);
+            double globalClustering = TestLib.getGlobalClustering(metricStructure.getElements());
+            outp.write(metricStructure.getSize() + " " + globalClustering + "\n");
+            outp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeLocalClusteringDestribution(AbstractMetricStructure metricStructure, String output) {
+        FileWriter outp;
+        try {
+            outp = new FileWriter(output, true);
+            double globalClustering = TestLib.getAvgClusteringCoeff(metricStructure.getElements());
+            outp.write(metricStructure.getSize() + " " + globalClustering + "\n");
+            outp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
